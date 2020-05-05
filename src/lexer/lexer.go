@@ -41,7 +41,13 @@ SCAN:
 	switch tok {
 	case EOF:
 		// Stop lex
-	case IDENT, NUMBER, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, COMMA, SEMICOLON, EQUAL, ANGLE_LEFT, ANGLE_RIGHT, COMMENT:
+	case IDENT, NUMBER, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, COMMA, SEMICOLON, EQUAL, ANGLE_LEFT, ANGLE_RIGHT:
+		result.Literal = lit
+	case COMMENT:
+		if lastToken != ',' {
+			// Skip the comment unless it's after the comma
+			goto SCAN
+		}
 		result.Literal = lit
 	case WS:
 		// Skip
