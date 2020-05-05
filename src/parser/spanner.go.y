@@ -3,6 +3,7 @@ package parser
 
 import (
     "strconv"
+    "strings"
 
 	"github.com/syucream/spar/src/types"
 )
@@ -36,8 +37,9 @@ import (
 %token<str> ON DELETE CASCADE NO ACTION
 %token<str> MAX UNIQUE NULL_FILTERED STORING
 %token<str> ADD COLUMN SET
+%token<str> COMMENT
 %token<str> true null allow_commit_timestamp
-%token<empty> '(' ',' ')' ';' '='
+%token<empty> '(' ',' ')' ';' '=' '#' '/'
 %token<str> CREATE ALTER DROP
 %token<str> DATABASE TABLE INDEX
 %token<str> BOOL INT64 FLOAT64 STRING BYTES DATE TIMESTAMP
@@ -46,6 +48,8 @@ import (
 %token<str> table_name
 %token<str> column_name
 %token<str> index_name
+%type<str> comment
+%token<str> comment_content
 
 %type<col> column_def
 %type<cols> column_def_list
@@ -123,10 +127,17 @@ column_def_list:
     $$ = make([]types.Column, 0, 1)
     $$ = append($$, $1)
   }
+  | column_def ',' comment column_def_list
+  {
+	$1.Comment = $3
+    $$ = append($4, $1)
+  }
   | column_def ',' column_def_list
   {
     $$ = append($3, $1)
   }
+  
+
 
 column_def:
   column_name column_type not_null_opt options_def
@@ -282,7 +293,13 @@ not_null_opt:
   {
     $$ = types.True
   }
-  
+
+comment:
+  comment_content
+  {
+	$$ = strings.TrimSpace(strings.TrimRight(strings.TrimLeft($1, "/*"), "*/"))
+  }
+
 create_index:
   CREATE unique_opt null_filtered_opt INDEX index_name ON table_name '(' key_part_list ')' storing_clause_opt interleave_clause_list
   {
@@ -450,3 +467,4 @@ int64_value:
     v, _ := strconv.ParseInt($1, 16, 64)
     $$ = v
   }
+

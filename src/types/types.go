@@ -46,6 +46,7 @@ type Column struct {
 	Type    ColumnType
 	NotNull bool
 	Options string
+	Comment string
 }
 
 type ColumnType struct {

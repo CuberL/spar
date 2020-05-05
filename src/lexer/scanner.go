@@ -18,8 +18,9 @@ const (
 	WS
 
 	// Literals
-	IDENT  // main
-	NUMBER // number literal
+	IDENT   // main
+	NUMBER  // number literal
+	COMMENT // comment
 
 	// Misc characters
 	ASTERISK          // *
@@ -59,6 +60,9 @@ func (s *Scanner) Scan() (tok Token, lit string) {
 	} else if isDigit(ch) {
 		s.unread()
 		return s.scanNumber()
+	} else if isCommentStart(ch) {
+		s.unread()
+		return s.scanComment()
 	}
 
 	// Otherwise read the individual character.
@@ -85,6 +89,36 @@ func (s *Scanner) Scan() (tok Token, lit string) {
 	}
 
 	return ILLEGAL, string(ch)
+}
+
+func isCommentStart(ch rune) bool {
+	return ch == '/'
+}
+
+func (s *Scanner) scanComment() (tok Token, lit string) {
+	var buf bytes.Buffer
+	s.read()
+	ch := s.read()
+	if ch != '*' {
+		return ILLEGAL, string(ch)
+	}
+
+	buf.Write([]byte("/*"))
+
+	last_ch := ch
+	ch = s.read()
+	for {
+		buf.WriteRune(ch)
+		if last_ch == '*' && ch == '/' {
+			return COMMENT, buf.String()
+		}
+		last_ch = ch
+		ch = s.read()
+		if ch == eof {
+			break
+		}
+	}
+	return ILLEGAL, string(buf.String())
 }
 
 // scanWhitespace consumes the current rune and all contiguous whitespace.

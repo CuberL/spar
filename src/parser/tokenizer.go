@@ -3,6 +3,7 @@ package parser
 import (
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -95,6 +96,8 @@ func (kt *keywordTokenizer) FromStrLit(lit string, lastToken int) int {
 		if _, err := strconv.ParseInt(lit[2:], 16, 0); err == nil {
 			tokVal = hex_value
 		}
+	} else if strings.HasPrefix(lit, "/*") {
+		tokVal = comment_content
 	} else {
 		switch lastToken {
 		case DATABASE:
@@ -117,7 +120,7 @@ func (kt *keywordTokenizer) FromStrLit(lit string, lastToken int) int {
 			if nameAttrRegexp.MatchString(lit) {
 				tokVal = table_name
 			}
-		case COLUMN, LEFT_PARENTHESIS_TOKEN, COMMA_TOKEN:
+		case COLUMN, LEFT_PARENTHESIS_TOKEN, COMMA_TOKEN, comment_content:
 			if nameAttrRegexp.MatchString(lit) {
 				tokVal = column_name
 			}
