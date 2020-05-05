@@ -3,8 +3,8 @@ package parser
 import (
 	"log"
 
-	"github.com/syucream/spar/src/lexer"
-	"github.com/syucream/spar/src/types"
+	"github.com/CuberL/spar/src/lexer"
+	"github.com/CuberL/spar/src/types"
 )
 
 type lexerWrapper struct {

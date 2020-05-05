@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/syucream/spar/src/parser"
+	"github.com/CuberL/spar/src/parser"
 )
 
 func main() {

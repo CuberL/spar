@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/syucream/spar/src/types"
+	"github.com/CuberL/spar/src/types"
 )
 
 type yySymType struct {
